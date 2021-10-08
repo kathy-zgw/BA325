@@ -1,0 +1,203 @@
+---
+title: "CCR BA325 Dashboard"
+author: "RMB Global Markets CPM"
+output:
+  flexdashboard::flex_dashboard:
+    css: styles.css
+    orientation: rows
+    social: menu
+    source_code: embed
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=TRUE}
+library(ggplot2)
+library(plotly)
+library(plyr)
+library(flexdashboard)
+library (sqldf)
+library (plyr)
+library (tibble)
+library (dplyr)
+library(janitor)
+library (readxl)
+#library(xlsx)
+library(pivottabler)
+library(magrittr)
+library(flexdashboard)
+library(rpivotTable)
+library(qwraps2)
+library(tidyverse)
+library(formattable)
+
+# create some data
+SS <- readRDS("SS.rds")
+MtM <- readRDS("MtM.rds")
+RWA <- readRDS("RWA.rds")
+EAD <- readRDS("EAD.rds")
+PD <- readRDS("PD.rds")
+CAP <-readRDS("CAP.rds")
+Collateral <- readRDS("Collateral.rds")
+LGD <- readRDS("LGD.rds")
+graph <- readRDS("Graph.rds")
+CDS <- readRDS("CDS.rds")
+graph2 <- readRDS("Graph2.rds")
+
+
+```
+
+
+Portfolio Overview
+=======================================================================
+
+Column {.tabset}
+-------------------------------------
+
+### Market to Market 
+
+
+```{r}
+rpivotTable(MtM,rows="ASSETCLASS", cols="BUSINESSDATE", aggregatorName = "sum", vals = "MARKTOMARKET_ZAR", 
+            sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+            return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+```
+### Source Systems 
+```{r}
+rpivotTable(SS,rows="SOURCESYSTEM", cols="BUSINESSDATE", aggregatorName = "count", vals = "SOURCESYSTEM",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+              return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+```
+
+### OTC_CAP
+```{r}
+rpivotTable(CAP,rows="ASSETCLASS", cols="BUSINESSDATE", aggregatorName = "sum", vals = "CTPY_OTC_CAPITAL",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+         return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+```
+### OTC_CAP Graph
+```{r}
+rpivotTable(graph, cols=c("BUSINESSDATE"), aggregatorName = "Sum", vals = "CTPY_OTC_CAPITAL",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+               return sortAs([\"01-SEP-21\",\"02-SEP-21\",\"03-SEP-21\",\"04-SEP-21\",\"06-SEP-21\",\"07-SEP-21\",\"08-SEP-21\",\"09-SEP-21\",\"10-SEP-21\",\"11-SEP-21\",\"13-SEP-21\",\"14-SEP-21\",\"15-SEP-21\",\"16-SEP-21\",\"17-SEP-21\",\"18-SEP-21\",\"20-SEP-21\",\"21-SEP-21\",\"22-SEP-21\",\"23-SEP-21\",\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\",\"08-OCT-21\",\"09-OCT-21\",\"11-OCT-21\",\"12-OCT-21\",\"13-OCT-21\"]);
+            );
+            } 
+            }",
+            rendererName ="Bar Chart")
+
+```
+### CDS_CAP
+```{r}
+rpivotTable(CDS,rows="ASSETCLASS", cols="BUSINESSDATE", aggregatorName = "sum", vals = "CTPY_CDS_CAPITAL",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+              return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+
+
+```
+### CDS_CAP Graph
+```{r}
+rpivotTable(graph2, cols=c("BUSINESSDATE"), aggregatorName = "Sum", vals = "CTPY_CDS_CAPITAL",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+        return sortAs([\"01-SEP-21\",\"02-SEP-21\",\"03-SEP-21\",\"04-SEP-21\",\"06-SEP-21\",\"07-SEP-21\",\"08-SEP-21\",\"09-SEP-21\",\"10-SEP-21\",\"11-SEP-21\",\"13-SEP-21\",\"14-SEP-21\",\"15-SEP-21\",\"16-SEP-21\",\"17-SEP-21\",\"18-SEP-21\",\"20-SEP-21\",\"21-SEP-21\",\"22-SEP-21\",\"23-SEP-21\",\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\",\"08-OCT-21\",\"09-OCT-21\",\"11-OCT-21\",\"12-OCT-21\",\"13-OCT-21\"]);
+            } 
+            }",
+            rendererName ="Bar Chart")
+
+```
+
+### RWA
+```{r}
+rpivotTable(RWA,rows="ASSETCLASS", cols="BUSINESSDATE", aggregatorName = "sum", vals = "RWA",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+         return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            }  
+            }")
+
+```
+
+
+### EAD
+```{r}
+rpivotTable(EAD,rows="ASSETCLASS", cols="BUSINESSDATE", aggregatorName = "sum", vals = "EAD",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+            return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+```
+
+### Collateral
+```{r}
+rpivotTable(Collateral,rows="TYPE", cols="BUSINESSDATE", aggregatorName = "sum", vals = "COLLATERAL_AMT",sorters = "
+            function(attr) { 
+            var sortAs = $.pivotUtilities.sortAs;
+            if (attr == \"BUSINESSDATE\") { 
+              return sortAs([\"24-SEP-21\",\"25-SEP-21\",\"27-SEP-21\",\"28-SEP-21\",\"29-SEP-21\",\"30-SEP-21\",\"01-OCT-21\",\"02-OCT-21\",\"04-OCT-21\",\"05-OCT-21\",\"06-OCT-21\",\"07-OCT-21\"]);
+            } 
+            }")
+
+```
+
+Summary Statistics 
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### PD
+
+```{r}
+PD_Summary <- PD %>% 
+  group_by(BUSINESSDATE) %>%
+  summarize(min = min(PD,na.rm = TRUE),average_pd = mean(PD,na.rm = TRUE),max = max(PD,na.rm = TRUE))
+
+knitr::kable(PD_Summary)
+
+```
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### LGD
+
+```{r}
+LGD_Summary <- LGD %>% 
+  group_by(BUSINESSDATE) %>%
+  summarize(min = min(LGD,na.rm = TRUE),average_LGD = mean(LGD,na.rm = TRUE),max = max(LGD,na.rm = TRUE))
+
+knitr::kable(LGD_Summary)
+
+```
